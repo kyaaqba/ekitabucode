@@ -1,0 +1,109 @@
+<script>
+function setParam(name, value) {
+    var l = window.location;
+
+    /* build params */
+    var params = {};        
+    var x = /(?:\??)([^=&?]+)=?([^&?]*)/g;        
+    var s = l.search;
+    for(var r = x.exec(s); r; r = x.exec(s))
+    {
+        r[1] = decodeURIComponent(r[1]);
+        if (!r[2]) r[2] = '%%';
+        params[r[1]] = r[2];
+    }
+
+    /* set param */
+    params[name] = encodeURIComponent(value);
+
+    /* build search */
+    var search = [];
+    for(var i in params)
+    {
+        var p = encodeURIComponent(i);
+        var v = params[i];
+        if (v != '%%') p += '=' + v;
+        search.push(p);
+    }
+    search = search.join('&');
+
+    /* execute search */
+    l.search = search;
+}
+
+
+var searchBooksInput = document.getElementById('searchBooks');
+var searchInputTimeout = null;
+
+searchBooksInput.onkeyup = function (e) {
+    searchInputTimeout = setTimeout(function()
+    {
+        clearTimeout(searchInputTimeout);
+
+        // Declare variables
+        var input, filter, ul, titles, authors, a, i;
+        input = document.getElementById('searchBooks');
+        filter = input.value.toUpperCase();
+        ul = document.getElementById("app-container");
+        libraryItems = document.querySelectorAll('.library-item');
+
+        // Loop through all list items, and hide those who don't match the search query
+        for (i = 0; i < libraryItems.length; i++) {
+            var libraryItem = libraryItems[i];
+            var titleElement = libraryItem.querySelector('.title');
+            var authorElement = libraryItem.querySelector('.author');
+            var subjectElement = libraryItem.querySelector('.subject');
+
+            if (titleElement.innerHTML.toUpperCase().indexOf(filter) > -1 ||
+                authorElement.innerHTML.toUpperCase().indexOf(filter) > -1  ||
+                subjectElement.innerHTML.toUpperCase().indexOf(filter) > -1 
+
+               ) {
+                console.log(titleElement.innerHTML + " - " + authorElement.innerHTML );
+                libraryItem.style.display = "";
+            }
+            else
+            {
+                console.log("no match");
+                libraryItem.style.display = "none";
+            }
+        }
+    },500);
+}
+</script>
+<div class="btn-group navbar-left">
+    <button id="aboutButt1" tabindex="1" type="button" class="btn icon-logo" data-toggle="modal" data-target="#about-dialog" title="{{strings.about}}" aria-label="{{strings.about}}"></button>
+    <a href="javascript:setParam('sort','title')" style="padding-top: 8px;" tabindex="1" class="btn icon-sort-by-alphabet with-text" title="{{strings.sort_title}}"  aria-label="{{strings.sort_title}}">
+        <span class="glyphicon glyphicon-sort-by-alphabet" aria-hidden="true"></span>Title
+    </a>
+    <a href="javascript:setParam('sort','author')"  style="padding-top: 8px;" tabindex="1" class="btn icon-sort-by-alphabet with-text" title="{{strings.sort_author}}" aria-label="{{strings.sort_author}}">
+        <span class="glyphicon glyphicon-sort-by-alphabet" aria-hidden="true"></span>Author
+    </a>
+    <input type="text" id="searchBooks" tabindex="1" placeholder="Search Books By Title, Author or Subject" style="width: 270px;margin-top: 8px;height: 20px;border-radius: 5px;padding-left: 5px;">
+</div>
+<div class="btn-group navbar-right">
+    <a  style="padding-top: 8px;" tabindex="1" class="btn icon-home" title="{{strings.home_link}}" href="/" aria-label="{{strings.home_link}}">
+        <span class="glyphicon glyphicon-home" aria-hidden="true"></span>
+    </a><F29>
+    <button tabindex="1" type="button" class="btn icon-thumbnails" title="{{strings.thumbnail_view}}" aria-label="{{strings.thumbnail_view}}">
+        <span class="glyphicon glyphicon-th" aria-hidden="true"></span>
+    </button>
+    <select style="margin-top: 7px;" id="library-select">
+        <option>Filter Books By Subject/Discipline</option>
+        <option value="library">Show All</option>
+        <!-- <option value="h_social_sciences_statististics_subject">H : Social Sciences, Statistics</option>
+        <option value="hb_hj_economics_subject">HB-HJ : Economics</option>
+        <option value="hm_hx_sociology_subject">HM-HX : Sociology</option>
+        <option value="l_law_subject">L : Law Collection</option>
+        <option value="n_architecture_art_subject">N : Architecture, Art</option>
+        <option value="p_language_literature_subject">P : Language, Literature</option>
+        <option value="q_s_science_medicine_agriculture">Q-S : Science, Medicine, Agriculture</option>
+        <option value="t_technology_engineering_subject">T : Technology, Engineering</option> -->
+            </select>
+    <button tabindex="1" type="button" class="btn icon-list-view" title="{{strings.list_view}}" aria-label="{{strings.list_view}}">
+        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>
+    </button>
+    <button id="settbutt1" tabindex="1" type="button" class="btn icon-settings" title="{{strings.settings}} [{{keyboard.ShowSettingsModal}}]" aria-label="{{strings.settings}} [{{keyboard.ShowSettingsModal}}]" accesskey="{{keyboard.accesskeys.ShowSettingsModal}}" data-toggle="modal" data-target="#settings-dialog">
+        <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+    </button>
+</div>

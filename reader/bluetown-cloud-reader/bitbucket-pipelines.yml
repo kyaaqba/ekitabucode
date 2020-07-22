@@ -1,0 +1,72 @@
+image: node:8.6.0
+
+pipelines:
+ default:
+  - step:
+     caches:
+      - node
+     script: 
+      - git submodule update --init --recursive
+      - npm run prepare:all
+      - npm install
+      - npm run dist
+ custom:
+   deploy-to-test:
+   - step:
+       name: Deploy to test build
+       caches:
+         - node
+       script: 
+         - git submodule update --init --recursive
+         - npm run prepare:all
+         - npm install
+         - npm run dist
+       artifacts:
+         - dist/**
+   - step:
+        name: Deploy to test push
+        image: atlassian/default-image:2
+        deployment: test
+        script:
+          - rsync -avzhO --no-perms --stats --delete --include-from=$BITBUCKET_CLONE_DIR/deploymentFiles.txt  $BITBUCKET_CLONE_DIR/ $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH_TEST
+          #- ssh $DEPLOY_USER@$DEPLOY_HOST chown $DEPLOY_USER:uon -R $DEPLOY_PATH_TEST/*
+   deploy-to-prod:
+      - step:
+          name: Deploy to prod build
+          caches:
+            - node
+          script: 
+            - git submodule update --init --recursive
+            - npm run prepare:all
+            - npm install
+            - npm run dist
+          artifacts:
+            - dist/**
+      - step:
+         name: Deploy to prod
+         image: atlassian/default-image:2
+         deployment: production
+         script:
+          - rsync -avzhO --no-perms --stats --delete --include-from=$BITBUCKET_CLONE_DIR/deploymentFiles.txt  $BITBUCKET_CLONE_DIR/ $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH_PROD
+          #- ssh $DEPLOY_USER@$DEPLOY_HOST chown $DEPLOY_USER:uon -R $DEPLOY_PATH_PROD/*
+   deploy-to-staging:
+      - step:
+          name: Deploy to staging build
+          caches:
+            - node
+          script: 
+            - git submodule update --init --recursive
+            - npm run prepare:all
+            - npm install
+            - npm run dist
+          artifacts:
+            - dist/**
+      - step:
+         name: Deploy to staging
+         image: atlassian/default-image:2
+         deployment: staging
+         script:  
+          - rsync -avzhO --no-perms --stats --delete --include-from=$BITBUCKET_CLONE_DIR/deploymentFiles.txt  $BITBUCKET_CLONE_DIR/ $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH_STAGING
+          #- ssh $DEPLOY_USER@$DEPLOY_HOST chown $DEPLOY_USER:uon -R $DEPLOY_PATH_STAGING/*
+
+

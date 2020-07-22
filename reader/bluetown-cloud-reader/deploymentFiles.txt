@@ -1,0 +1,10 @@
++ dist/
++ dist/cloud-reader/***
++ images/***
++ css/***
++ index.php
++ TrafficDirector.php
++ functions.php
++ .htaccess
++ .env
+- *

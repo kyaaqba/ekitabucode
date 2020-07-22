@@ -1,0 +1,17 @@
+body {
+	background-color: #E9ECEF !important;
+}
+ .div-align-center{
+	  text-align: center
+  }
+  .div-align-contents-center{
+	  width: 100%; 
+	  margin: 0 auto; 
+	  text-align: center
+	}
+	.container-full-bg {
+		margin-top: 20%;
+		margin-bottom: 20%;
+    width: 100%;
+
+}
